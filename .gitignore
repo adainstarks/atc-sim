@@ -1,0 +1,15 @@
+# build output
+atc
+atc.exe
+test_queues
+test_queues.exe
+*.o
+
+# raw BTS downloads (about 32 MB each); scripts/prepare_data.py fetches them
+data/raw/
+
+# editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+__pycache__/
