@@ -1,7 +1,7 @@
 # Air Traffic Control Simulator: Sorted Vector vs. Heap
 
 CSCI 3110 (Algorithms and Data Structures) semester team project, MTSU, Fall 2026.
-Team: William Starks, Kyle Penton, Pau Mang.
+Team: William Starks, Kyle Penton, Pau Mang, Heidtmann Oppong.
 
 An airport tower keeps a list of incoming flights and must always land the one due soonest. Flights join the list, run late or early, and get cancelled or diverted. We store that list two ways, a **sorted vector** and a **binary heap**, and measure which keeps up better as traffic grows. The data is 109,781 real flights into Atlanta (ATL) from May to August 2026.
 
@@ -14,20 +14,24 @@ An airport tower keeps a list of incoming flights and must always land the one d
 | Structure A: sorted vector | Done. Passes every test and lands all 107,500 flights in the real order |
 | Structure B: heap with lazy deletion | To do (Kyle) |
 | Structure C: indexed heap, our independent research | To do (Pau) |
-| Chart of the benchmark results | To do (Kyle) |
+| Results chart and final report | To do (Heidtmann) |
 
 ## Who's building what
 
 | Who | Builds | Files | Done when | Target date |
 |---|---|---|---|---|
-| **William** | Data, loader, simulator, benchmark, tests, Structure A (sorted vector). Then runs the final benchmark, puts the report and slides together, and submits | `data/`, `scripts/prepare_data.py`, `src/` except the two heaps, `tests/` | Built. Final benchmark runs once both heaps work | Nov 15 |
-| **Kyle** | Structure B: a binary heap with lazy deletion. Then a script that turns `results/results.csv` into a chart | `src/LazyHeapQueue.h` and `.cpp`, and a new `scripts/plot_results.py` | `make test` passes for lazy-heap and `./atc check` says OK. The chart shows all three sizes | Heap Nov 12, chart Nov 15 |
+| **William** | Done: the data, loader, simulator, benchmark, tests and Structure A (sorted vector). From here: reviews and merges pull requests, and combines everyone's slides into one deck | `data/`, `scripts/prepare_data.py`, `src/` except the two heaps, `tests/` | Code done. Deck combined | Nov 29 |
+| **Kyle** | Structure B: a binary heap with lazy deletion | `src/LazyHeapQueue.h` and `.cpp` | `make test` passes for lazy-heap and `./atc check` says OK | Nov 12 |
 | **Pau** | Structure C: an indexed heap, our independent research. Then a one-page write-up of how it works and whether it beats lazy deletion on our data | `src/IndexedHeapQueue.h` and `.cpp`, and a new `docs/research-indexed-heap.md` | `make test` passes for indexed-heap and `./atc check` says OK | Heap Nov 12, write-up Nov 22 |
+| **Heidtmann** | The experiments and the final report. Writes a script that turns `results/results.csv` into a chart and a results table, then runs the final benchmark once both heaps work. Then puts the final report together from everyone's sections and submits it with the zip | A new `scripts/plot_results.py`, plus `results/` and the report | The chart and table cover all three structures at all three sizes, and the report is submitted | Chart Nov 15, report Nov 29 |
 
-Each of us writes the report section and presents the slides for our own part:
-- William: application and dataset, Structure A, the experiment setup and results table.
-- Kyle: Structure B and the chart.
+Heidtmann can start the chart script now. `results/first-run-2026-11-04-sorted-vector.csv` has the same columns `./atc bench` writes, so the script can be built on that file before the heaps are done.
+
+Each of us writes the report section and makes the slides for our own part:
+- William: the application and dataset, and Structure A.
+- Kyle: Structure B.
 - Pau: the indexed heap research.
+- Heidtmann: the experiments (how we tested, the table and the chart) and the title page.
 - All of us: the conclusions.
 
 The comments at the top of `LazyHeapQueue.h` and `IndexedHeapQueue.h` describe the plan for each heap.
@@ -37,10 +41,10 @@ The comments at the top of `LazyHeapQueue.h` and `IndexedHeapQueue.h` describe t
 | Date | What |
 |---|---|
 | **Thu Nov 5, 11:59 PM** | Progress report on Canvas. It isn't set up as a group assignment, so each of us uploads it |
-| Thu Nov 12 | Both heaps pass `make test` and `./atc check` |
-| Sun Nov 15 | First full benchmark with all three structures; chart script works |
-| Sun Nov 22 | Report sections drafted, research write-up done (Test 3 is Tue Nov 24) |
-| Sun Nov 29 | Report put together, slides done, one practice run of the 5-minute talk |
+| Thu Nov 12 | Both heaps pass `make test` and `./atc check` (Kyle, Pau) |
+| Sun Nov 15 | First full benchmark with all three structures; chart script works (Heidtmann) |
+| Sun Nov 22 | Everyone's report section and slides drafted; research write-up done (Test 3 is Tue Nov 24) |
+| Sun Nov 29 | Report put together (Heidtmann), deck combined (William), one practice run of the 5-minute talk |
 | **Tue Dec 1** | Presentation in class. Submit the report and a zip of this repo (GitHub → Code → Download ZIP) by midnight. Canvas says Dec 1 and the handout says Dec 2, so we aim for Dec 1 |
 
 ## Getting started
