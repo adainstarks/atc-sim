@@ -141,20 +141,20 @@ The benchmark sizes are the first 1,000 rows (about May 1–2), the first 10,000
 
 ## Working together
 
-The repo is public, so you don't need an invite. Click **Fork** on GitHub to get your own copy, work there, and send a pull request:
+First accept your invite. GitHub emails it, or open https://github.com/adainstarks/atc-sim/invitations. Then work on your own branch:
 
 ```sh
-git clone https://github.com/YOUR-USERNAME/atc-sim.git   # your fork
-cd atc-sim
-git checkout -b lazy-heap
+git checkout -b kyle/lazy-heap
 # edit src/LazyHeapQueue.h and src/LazyHeapQueue.cpp
 make test && ./atc check
 git add src/LazyHeapQueue.h src/LazyHeapQueue.cpp
 git commit -m "Lazy heap: addFlight and landNext"
-git push -u origin lazy-heap
+git push -u origin kyle/lazy-heap
 ```
 
-Then open a pull request from your fork to `adainstarks/atc-sim`, and William merges it. GitHub builds the code and runs the tests on every pull request; a red X means something broke. The first time each person sends a pull request, William has to click "Approve and run" before the tests start.
+Then open a pull request on GitHub, and William merges it. GitHub builds the code and runs the tests on every push; a red X means something broke.
+
+No invite yet? Click **Fork**, push your branch to your fork, and open the pull request from there. The first time, William has to click "Approve and run" before the tests start.
 
 - Edit only your own files. If you need a change to a shared file (`ArrivalQueue.h`, `Simulation.*` or the tests), say so in the group chat first, because it affects everyone.
 - Don't commit build output (`atc`, `test_queues`, `*.o`). `.gitignore` already skips it.
