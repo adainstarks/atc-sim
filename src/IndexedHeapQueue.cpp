@@ -4,35 +4,124 @@
  Program Description: Structure C, the indexed heap (see IndexedHeapQueue.h).
 */
 #include "IndexedHeapQueue.h"
+#include <algorithm>
 
 // Each function below throws NotWrittenYet until it is written. Replace the throw with
 // the real code; the tests skip whatever still throws.
 
-IndexedHeapQueue::IndexedHeapQueue(int)
+IndexedHeapQueue::IndexedHeapQueue(int maxFlights)
 {
+ // reserve some space for performance
+ heap.reserve(maxFlights);
 }
 
-void IndexedHeapQueue::addFlight(int, int)
+void IndexedHeapQueue::addFlight(int id, int arrival)
 {
-    throw NotWrittenYet("IndexedHeapQueue::addFlight");
+    //duplicate flight id check
+ if (pos.find(id) != pso.end()){
+     delayFlight(id, arrival);
+     return;
+ }
+
+heap.pushBack(Entry(id, arrival));
+ int index = heap.size() -1;
+ pos[id] = index;
+ siftUp(index);
 }
 
-void IndexedHeapQueue::delayFlight(int, int)
+void IndexedHeapQueue::delayFlight(int id, int newArrival)
 {
-    throw NotWrittenYet("IndexedHeapQueue::delayFlight");
-}
+    auto it = pos.find(id);
+    if (it == pos.end() 
+     return;
+    int i = it->second;
+    int oldArrival = heap[i].arrival;
+    heap[i].arrival = newArrival;
+    if (newArrival < oldArrival) {
+        siftUp(i);
+    } else if (newArrival > oldArrival){
+         siftDown(i);
+    }
+ }
 
 void IndexedHeapQueue::removeFlight(int)
 {
-    throw NotWrittenYet("IndexedHeapQueue::removeFlight");
+    auto it = pos.find(id);
+    if (it == pos.end()) return;
+    int i = it->second;
+    pos.erase(id);
+ 
+    int lastIndex = heap.size() - 1;
+    if (i == lastIndex) {
+        heap.popBack();
+        return;
+    }
+ heap[i] = heap[lastIndex]; // shift last into resently removed spot
+ pos[heap[i].id] = i;
+ heap.popBack();
+
+ int parentIndex = (i-1)/2
+ if (i > 0 && heap [i].arrival < heap[parentIndex].arrival){
+     siftUp(i);
+ } else {
+     siftDown(i);
+ }
 }
 
-bool IndexedHeapQueue::landNext(int &, int &)
+bool IndexedHeapQueue::landNext(int &id, int &arrival)
 {
-    throw NotWrittenYet("IndexedHeapQueue::landNext");
+    if (heap.empty()){
+     return false;
+    }
+    id = heap[0].id;
+    arrival = heap[0].arrival;
+    pos.erase(id);
+    if (heap.size() == 1){
+        heap.popBack();
+        return true;
+    }
+    heap[0] = heap.back();
+    heap.popBack();
+    pos[heap[0].id] = 0;
+    siftDown(0);
+    return true;
 }
 
 int IndexedHeapQueue::size() const
 {
-    throw NotWrittenYet("IndexedHeapQueue::size");
+    return heap.size();
+}
+// healpers
+void IndexedHeapQueue::siftUp(int i)
+{
+ while (i > 0) {
+      int parentIndex = (i-1)/2;
+      if (heap[i].arrival < heap[parentIndex].arrival) {
+          std::swap(heap[i], heap[parentIndex];
+          pos[heap[i].id] = i;
+          pos[heap[parentIndex].id] = parentIndex;
+          i = parentIndex;
+      } else {
+          break;
+      }
+   }
+}
+void IndexedHeapQueue::siftDown(int i)
+{
+    int n = heap.size();
+    while (2 * i + 1 < n) {
+        int left = 2 * i + 1;
+        int right = 2 * i +2;
+        int smallest = i;
+        if (right < n && heap [right].arrival){
+           smallest = right;
+        }
+        if (smallest !=i) {
+            std::swap(heap[i], heap[smallest]);
+            pos[heap[smallest].id] = smallest;
+            i = smallest;
+        } else {
+            break;
+        }
+    }
 }
