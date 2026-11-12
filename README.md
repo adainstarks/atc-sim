@@ -1,20 +1,20 @@
-# Air Traffic Control Simulator: Sorted Vector vs. Heap
+# Air Traffic Control Simulator: Sorted Vector vs. Heaps
 
 CSCI 3110 (Algorithms and Data Structures) semester team project, MTSU, Fall 2026.
 Team: William Starks, Kyle Penton, Pau Mang, Heidtmann Oppong.
 
-An airport tower keeps a list of incoming flights and must always land the one due soonest. Flights join the list, run late or early, and get cancelled or diverted. We store that list two ways, a **sorted vector** and a **binary heap**, and measure which keeps up better as traffic grows. The data is 109,781 real flights into Atlanta (ATL) from May to August 2026.
+An airport tower keeps a list of incoming flights and must always land the one due soonest. Flights join the list, run late or early, and get cancelled or diverted. We store that list three ways, a **sorted vector**, a **binary heap with lazy deletion** and an **indexed heap**, and measure which keeps up best as traffic grows. The data is 109,781 real flights into Atlanta (ATL) from May to August 2026.
 
-## Status (November 4)
+## Status (November 12)
 
 | Part | State |
 |---|---|
-| Real data: `data/atl_arrivals.csv` | Done |
-| Loader, simulator, benchmark, tests | Done |
-| Structure A: sorted vector | Done. Passes every test and lands all 107,500 flights in the real order |
-| Structure B: heap with lazy deletion | To do (Kyle) |
-| Structure C: indexed heap, our independent research | To do (Pau) |
-| Results chart and final report | To do (Heidtmann) |
+| Real data, loader, simulator, benchmark, tests | Done |
+| Structure A: sorted vector | Done |
+| Structure B: heap with lazy deletion | Done. Passes every test and lands all 107,500 flights in the real order |
+| Structure C: indexed heap | Done. Passes every test and lands all 107,500 flights in the real order. Write-up: `docs/research-indexed-heap.md` |
+| Final benchmark and charts | Done: `results/results.csv`, `results/charts/` |
+| Final report and slides | Done. The report (`ATC_Final_Report.docx`) is submitted separately from this repo; the slides are presented in class |
 
 ## Who's building what
 
@@ -115,20 +115,32 @@ n is the number of flights in the list.
 
 Our prediction: the heaps win at large n, because every add and delay in the vector shifts O(n) entries. The vector stays competitive at small n and always lands fastest.
 
-## Results so far
+## Results
 
-The first measurement is from November 4. It covers the sorted vector only: 5 runs per size on an Intel i5-1334U, built with g++ -O2. Times are averages in milliseconds.
+Final benchmark: 3 structures x 3 sizes x 5 runs (45 runs, all in `results/results.csv`), measured on Linux x86_64 with g++ 14.2.0, `-O2`. Times are averages in milliseconds; lower is better. Charts and `benchmark_summary.csv` are in `results/charts/` (made by `scripts/plot_results.py`).
 
-| Flights | Add | Delay | Remove | Land | Total |
+| Average total time (ms) | 1,000 | 10,000 | 100,000 |
+|---|---|---|---|
+| sorted-vector | 0.231 | 13.063 | 1426.500 |
+| lazy-heap | 0.106 | 1.765 | 29.345 |
+| indexed-heap | 0.059 | 0.910 | 14.036 |
+
+At 100,000 flights:
+
+| Structure | Add | Delay | Remove | Land | Total |
 |---|---|---|---|---|---|
-| 1,000 | 0.075 | 0.137 | 0.006 | 0.002 | 0.219 |
-| 10,000 | 2.46 | 7.98 | 0.042 | 0.020 | 10.5 |
-| 100,000 | 325 | 1,169 | 15.7 | 0.202 | 1,510 |
+| sorted-vector | 303.846 | 1107.514 | 14.548 | 0.594 | 1426.500 |
+| lazy-heap | 3.342 | 2.558 | 0.011 | 23.434 | 29.345 |
+| indexed-heap | 2.178 | 0.883 | 0.047 | 10.928 | 14.036 |
 
-- **Land** grows 10× for 10× more flights. That fits O(1) per landing.
-- **Add and delay** grow 30–150× for 10× more flights. That fits O(n) per operation, or O(n²) for the whole run.
+- **The indexed heap was fastest at every size**, about 100x faster than the sorted vector and about 2x faster than the lazy heap at 100,000 flights.
+- **The prediction held for landing and for large n.** The vector lands fastest (0.59 ms for 97,783 landings), and its total grew about 109x from 10,000 to 100,000 flights, close to the 100x expected from O(n²).
+- **One prediction did not hold.** The vector was not competitive even at 1,000 flights (0.231 ms against 0.059 ms for the indexed heap).
+- **Limits:** one machine, the first N flights only, no confidence intervals. Rerun `./atc bench` on your own computer to check the ranking; exact times will differ.
 
-The raw runs are in `results/first-run-2026-11-04-sorted-vector.csv`.
+The earlier November 4 measurement of the sorted vector alone (Intel i5-1334U, 5 runs per size) is kept in `results/first-run-2026-11-04-sorted-vector.csv` as a baseline. It is not mixed into the numbers above.
+
+The full write-up is in the final report, submitted with this repo. The indexed heap research is in `docs/research-indexed-heap.md`.
 
 ## The data
 
