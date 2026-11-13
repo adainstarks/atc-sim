@@ -87,4 +87,3 @@ int LazyHeapQueue::size() const
 {
     return liveCount;
 }
-}
