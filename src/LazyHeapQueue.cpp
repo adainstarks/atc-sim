@@ -1,38 +1,86 @@
-// A.I. Disclaimer: TODO (owner) - say whether you used AI on this file, and for what.
+// A.I. Disclaimer: AI (Claude) was used ONLY for debugging purposes.
 /*
  PROGRAMMER:          Kyle Penton
  Program Description: Structure B, the lazy-deletion heap (see LazyHeapQueue.h).
 */
 #include "LazyHeapQueue.h"
+#include <stdexcept>
+#include <string>
 
-// Each function below throws NotWrittenYet until it is written. Replace the throw with
-// the real code; the tests skip whatever still throws.
-
-LazyHeapQueue::LazyHeapQueue(int)
+LazyHeapQueue::LazyHeapQueue(int maxFlights)
+    : arrivalOf(maxFlights, -1), liveCount(0)
 {
 }
 
-void LazyHeapQueue::addFlight(int, int)
+// A copy in the heap is current only if it matches the flight's recorded arrival time.
+bool LazyHeapQueue::isLive(const Entry &e) const
 {
-    throw NotWrittenYet("LazyHeapQueue::addFlight");
+    return e.id >= 0 && e.id < static_cast<int>(arrivalOf.size())
+        && arrivalOf[e.id] == e.arrival;
 }
 
-void LazyHeapQueue::delayFlight(int, int)
+// Throw away out-of-date copies sitting on top. Each stale copy is popped at most once
+// in its lifetime, which is why landNext is O(log n) amortized.
+void LazyHeapQueue::discardStaleTop()
 {
-    throw NotWrittenYet("LazyHeapQueue::delayFlight");
+    while (!heap.empty() && !isLive(heap.top()))
+        heap.pop();
 }
 
-void LazyHeapQueue::removeFlight(int)
+void LazyHeapQueue::addFlight(int id, int arrival)
 {
-    throw NotWrittenYet("LazyHeapQueue::removeFlight");
+    if (id >= static_cast<int>(arrivalOf.size()))
+        arrivalOf.resize(id + 1, -1);
+
+    if (arrivalOf[id] == -1)        // a brand-new flight, not a re-add of a waiting one
+        ++liveCount;
+    arrivalOf[id] = arrival;
+
+    Entry e = {arrival, id};
+    heap.push(e);                   // O(log n)
 }
 
-bool LazyHeapQueue::landNext(int &, int &)
+void LazyHeapQueue::delayFlight(int id, int newArrival)
 {
-    throw NotWrittenYet("LazyHeapQueue::landNext");
+    if (id < 0 || id >= static_cast<int>(arrivalOf.size()) || arrivalOf[id] == -1)
+        throw std::invalid_argument("LazyHeapQueue: flight " + std::to_string(id)
+                                    + " is not in the list");
+
+    // The old copy stays in the heap and becomes stale because arrivalOf changes.
+    arrivalOf[id] = newArrival;
+    Entry e = {newArrival, id};
+    heap.push(e);                   // O(log n); liveCount is unchanged
+}
+
+void LazyHeapQueue::removeFlight(int id)
+{
+    if (id < 0 || id >= static_cast<int>(arrivalOf.size()) || arrivalOf[id] == -1)
+        throw std::invalid_argument("LazyHeapQueue: flight " + std::to_string(id)
+                                    + " is not in the list");
+
+    arrivalOf[id] = -1;             // O(1): every copy of this flight is now stale
+    --liveCount;
+}
+
+bool LazyHeapQueue::landNext(int &id, int &arrival)
+{
+    discardStaleTop();
+    if (heap.empty())
+        return false;
+
+    Entry e = heap.top();
+    heap.pop();
+
+    id = e.id;
+    arrival = e.arrival;
+
+    // Marking the flight gone also makes any duplicate copy stale (see below).
+    arrivalOf[id] = -1;
+    --liveCount;
+    return true;
 }
 
 int LazyHeapQueue::size() const
 {
-    throw NotWrittenYet("LazyHeapQueue::size");
+    return liveCount;
 }
