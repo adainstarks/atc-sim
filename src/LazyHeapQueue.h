@@ -3,11 +3,6 @@
  PROGRAMMER:          Kyle Penton
  Program Description: Structure B. The arrival list as a binary min-heap with lazy deletion.
 */
-// A.I. Disclaimer: TODO (owner) - say whether you used AI on this file, and for what.
-/*
- PROGRAMMER:          Kyle Penton
- Program Description: Structure B. The arrival list as a binary min-heap with lazy deletion.
-*/
 #ifndef LAZYHEAPQUEUE_H
 #define LAZYHEAPQUEUE_H
 
