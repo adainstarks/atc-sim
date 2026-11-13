@@ -6,4 +6,4 @@ The project handout allows AI on this project as long as we disclose meaningful 
 |---|---|---|---|---|
 | 2026-10-20 | William | Claude | Brainstorming and drafting the proposal | The team reviewed it |
 | 2026-11-04 | William | Claude | Data prep script, loader, simulator, benchmark, unit tests, Structure A (sorted vector), README | Unit tests pass. All 107,500 landed flights come out in the real arrival order |
-| 2026-11-12 | Kyle | Claude | Debugging LazyHeap.cpp & LazyHeap.h, helped writing comments on LazyHeap.h  | Running code and cross referencing code comments to be consistent with logic presented across documents. |
+| 2026-11-12 | Kyle | Claude | Debugging LazyHeapQueue.cpp & LazyHeapQueue.h, helped writing comments on LazyHeap.h  | Running code and cross referencing code comments to be consistent with logic presented across documents. |
