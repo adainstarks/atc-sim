@@ -1,3 +1,8 @@
+// A.I. Disclaimer: AI (Claude) was used for debugging and a couple of code comments.
+/*
+ PROGRAMMER:          Kyle Penton
+ Program Description: Structure B. The arrival list as a binary min-heap with lazy deletion.
+*/
 // A.I. Disclaimer: TODO (owner) - say whether you used AI on this file, and for what.
 /*
  PROGRAMMER:          Kyle Penton
@@ -8,6 +13,7 @@
 
 #include "ArrivalQueue.h"
 
+#include <climits>
 #include <functional>
 #include <queue>
 #include <vector>
@@ -40,8 +46,21 @@ public:
     int size() const;
 
 private:
-    // TODO: your data members, for example
-    //   std::priority_queue<Entry, std::vector<Entry>, std::greater<Entry>> heap;
+    static constexpr int GONE = INT_MIN;  // arrivalOf value for "not waiting"
+
+    // Earliest flight on top. May also hold stale copies of delayed/removed flights.
+    std::priority_queue<Entry, std::vector<Entry>, std::greater<Entry>> heap;
+
+    // arrivalOf[id] = the flight's CURRENT arrival time, or GONE.
+    // A heap entry is live only if arrivalOf[e.id] == e.arrival.
+    std::vector<int> arrivalOf;
+
+    int liveCount;  // flights waiting (heap.size() counts stale copies too)
+
+    bool isWaiting(int id) const;
+    bool isLive(const Entry &e) const;
+    void discardStaleTop();
 };
 
+#endif
 #endif
