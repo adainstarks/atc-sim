@@ -1,4 +1,4 @@
-// A.I. Disclaimer: TODO (owner) - say whether you used AI on this file, and for what.
+// A.I. Disclaimer: TODO (owner) - Gemini was used for debug and improve and fixed errors.
 /*
  PROGRAMMER:          Pau Mang
  Program Description: Structure C, our independent research. The arrival list as an
