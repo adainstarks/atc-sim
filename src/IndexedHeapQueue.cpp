@@ -6,9 +6,6 @@
 #include "IndexedHeapQueue.h"
 #include <algorithm>
 
-// Each function below throws NotWrittenYet until it is written. Replace the throw with
-// the real code; the tests skip whatever still throws.
-
 IndexedHeapQueue::IndexedHeapQueue(int maxFlights)
 {
     // reserve some space for performance
@@ -23,7 +20,7 @@ void IndexedHeapQueue::addFlight(int id, int arrival)
         return;
     }
 
-    heap.push_back(Entry{id, arrival});
+    heap.push_back(Entry{arrival, id});
     int index = heap.size() - 1;
     pos[id] = index;
     siftUp(index);
@@ -37,10 +34,13 @@ void IndexedHeapQueue::delayFlight(int id, int newArrival)
     int i = it->second;
     int oldArrival = heap[i].arrival;
     heap[i].arrival = newArrival;
-    if (newArrival < oldArrival) {
+    
+    // Compare whole entries for correct ordering/tie-breaking
+    int parentIndex = (i - 1) / 2;
+    if (i > 0 && heap[i] < heap[parentIndex]) {
         siftUp(i);
-    } else if (newArrival > oldArrival) {
-         siftDown(i);
+    } else {
+        siftDown(i);
     }
 }
 
@@ -61,7 +61,7 @@ void IndexedHeapQueue::removeFlight(int id)
     heap.pop_back();
 
     int parentIndex = (i - 1) / 2;
-    if (i > 0 && heap[i].arrival < heap[parentIndex].arrival) {
+    if (i > 0 && heap[i] < heap[parentIndex]) {
         siftUp(i);
     } else {
         siftDown(i);
@@ -97,7 +97,8 @@ void IndexedHeapQueue::siftUp(int i)
 {
     while (i > 0) {
         int parentIndex = (i - 1) / 2;
-        if (heap[i].arrival < heap[parentIndex].arrival) {
+        // Compare whole entries using Entry's overloaded operator<
+        if (heap[i] < heap[parentIndex]) {
             std::swap(heap[i], heap[parentIndex]);
             pos[heap[i].id] = i;
             pos[heap[parentIndex].id] = parentIndex;
@@ -116,10 +117,11 @@ void IndexedHeapQueue::siftDown(int i)
         int right = 2 * i + 2;
         int smallest = i;
         
-        if (heap[left].arrival < heap[smallest].arrival) {
+        // Compare whole entries using Entry's overloaded operator<
+        if (heap[left] < heap[smallest]) {
            smallest = left;
         }
-        if (right < n && heap[right].arrival < heap[smallest].arrival) {
+        if (right < n && heap[right] < heap[smallest]) {
            smallest = right;
         }
         
@@ -133,3 +135,6 @@ void IndexedHeapQueue::siftDown(int i)
         }
     }
 }
+
+
+Yes
