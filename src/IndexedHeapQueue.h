@@ -8,7 +8,7 @@
 #define INDEXEDHEAPQUEUE_H
 
 #include "ArrivalQueue.h"
-
+#include <unordered_map>
 #include <vector>
 
 // Structure C: an indexed binary min-heap, written by hand (not std::priority_queue).
@@ -42,10 +42,10 @@ public:
 
 private:
     // TODO: your data members and helpers, for example
-    //std::vector<Entry> heap;
-    //std::vector<int> pos;
-    //void siftUp(int i);
-    //void siftDown(int i);
+    std::vector<Entry> heap;
+    std::vector<int> pos;
+    void siftUp(int i);
+    void siftDown(int i);
 };
 
 #endif
