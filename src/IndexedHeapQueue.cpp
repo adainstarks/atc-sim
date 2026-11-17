@@ -3,22 +3,25 @@
  PROGRAMMER:          Pau Mang
  Program Description: Structure C, the indexed heap (see IndexedHeapQueue.h).
 */
-#include "IndexedHeapQueue.h"
-#include <algorithm>
-
-// Each function below throws NotWrittenYet until it is written. Replace the throw with
-// the real code; the tests skip whatever still throws.
-
 IndexedHeapQueue::IndexedHeapQueue(int maxFlights)
 {
     // reserve some space for performance
     heap.reserve(maxFlights);
 }
 
+// Helper to compare entries: primary sort by arrival (ascending), secondary sort by ID (ascending)
+static bool flightLess(const Entry& a, const Entry& b) {
+    if (a.arrival != b.arrival) {
+        return a.arrival < b.arrival;
+    }
+    return a.id < b.id;
+}
+
 void IndexedHeapQueue::addFlight(int id, int arrival)
 {
     // duplicate flight id check
-    if (pos.find(id) != pos.end()) {
+    auto it = pos.find(id);
+    if (it != pos.end()) {
         delayFlight(id, arrival);
         return;
     }
@@ -35,12 +38,14 @@ void IndexedHeapQueue::delayFlight(int id, int newArrival)
     if (it == pos.end()) 
         return;
     int i = it->second;
-    int oldArrival = heap[i].arrival;
+    
     heap[i].arrival = newArrival;
-    if (newArrival < oldArrival) {
+
+    int parentIndex = (i - 1) / 2;
+    if (i > 0 && flightLess(heap[i], heap[parentIndex])) {
         siftUp(i);
-    } else if (newArrival > oldArrival) {
-         siftDown(i);
+    } else {
+        siftDown(i);
     }
 }
 
@@ -61,7 +66,7 @@ void IndexedHeapQueue::removeFlight(int id)
     heap.pop_back();
 
     int parentIndex = (i - 1) / 2;
-    if (i > 0 && heap[i].arrival < heap[parentIndex].arrival) {
+    if (i > 0 && flightLess(heap[i], heap[parentIndex])) {
         siftUp(i);
     } else {
         siftDown(i);
@@ -97,7 +102,7 @@ void IndexedHeapQueue::siftUp(int i)
 {
     while (i > 0) {
         int parentIndex = (i - 1) / 2;
-        if (heap[i].arrival < heap[parentIndex].arrival) {
+        if (flightLess(heap[i], heap[parentIndex])) {
             std::swap(heap[i], heap[parentIndex]);
             pos[heap[i].id] = i;
             pos[heap[parentIndex].id] = parentIndex;
@@ -116,10 +121,10 @@ void IndexedHeapQueue::siftDown(int i)
         int right = 2 * i + 2;
         int smallest = i;
         
-        if (heap[left].arrival < heap[smallest].arrival) {
+        if (flightLess(heap[left], heap[smallest])) {
            smallest = left;
         }
-        if (right < n && heap[right].arrival < heap[smallest].arrival) {
+        if (right < n && flightLess(heap[right], heap[smallest])) {
            smallest = right;
         }
         
