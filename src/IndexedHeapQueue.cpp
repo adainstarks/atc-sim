@@ -23,7 +23,7 @@ void IndexedHeapQueue::addFlight(int id, int arrival)
         return;
     }
 
-    heap.push_back(Entry{id, arrival});
+    heap.push_back(Entry{arrival, id});
     int index = heap.size() - 1;
     pos[id] = index;
     siftUp(index);
@@ -61,7 +61,7 @@ void IndexedHeapQueue::removeFlight(int id)
     heap.pop_back();
 
     int parentIndex = (i - 1) / 2;
-    if (i > 0 && heap[i].arrival < heap[parentIndex].arrival) {
+    if (i > 0 && heap[i] < heap[parentIndex]) {
         siftUp(i);
     } else {
         siftDown(i);
@@ -116,7 +116,7 @@ void IndexedHeapQueue::siftDown(int i)
         int right = 2 * i + 2;
         int smallest = i;
         
-        if (heap[left].arrival < heap[smallest].arrival) {
+        if (heap[left] < heap[smallest]) {
            smallest = left;
         }
         if (right < n && heap[right].arrival < heap[smallest].arrival) {
