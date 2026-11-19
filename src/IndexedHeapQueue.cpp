@@ -3,31 +3,24 @@
  PROGRAMMER:          Pau Mang
  Program Description: Structure C, the indexed heap (see IndexedHeapQueue.h).
 */
+#include "IndexedHeapQueue.h"
+#include <algorithm>
+
 IndexedHeapQueue::IndexedHeapQueue(int maxFlights)
 {
-    // reserve some space for performance
     heap.reserve(maxFlights);
-}
-
-// Helper to compare entries: primary sort by arrival (ascending), secondary sort by ID (ascending)
-static bool flightLess(const Entry& a, const Entry& b) {
-    if (a.arrival != b.arrival) {
-        return a.arrival < b.arrival;
-    }
-    return a.id < b.id;
 }
 
 void IndexedHeapQueue::addFlight(int id, int arrival)
 {
-    // duplicate flight id check
     auto it = pos.find(id);
     if (it != pos.end()) {
         delayFlight(id, arrival);
         return;
     }
 
-    heap.push_back(Entry{id, arrival});
-    int index = heap.size() - 1;
+    heap.push_back(Entry{ arrival, id });
+    int index = static_cast<int>(heap.size()) - 1;
     pos[id] = index;
     siftUp(index);
 }
@@ -35,16 +28,18 @@ void IndexedHeapQueue::addFlight(int id, int arrival)
 void IndexedHeapQueue::delayFlight(int id, int newArrival)
 {
     auto it = pos.find(id);
-    if (it == pos.end()) 
+    if (it == pos.end()) {
         return;
+    }
+
     int i = it->second;
-    
     heap[i].arrival = newArrival;
 
     int parentIndex = (i - 1) / 2;
-    if (i > 0 && flightLess(heap[i], heap[parentIndex])) {
+    if (i > 0 && heap[i] < heap[parentIndex]) {
         siftUp(i);
-    } else {
+    }
+    else {
         siftDown(i);
     }
 }
@@ -52,39 +47,47 @@ void IndexedHeapQueue::delayFlight(int id, int newArrival)
 void IndexedHeapQueue::removeFlight(int id)
 {
     auto it = pos.find(id);
-    if (it == pos.end()) return;
+    if (it == pos.end()) {
+        return;
+    }
+
     int i = it->second;
     pos.erase(id);
- 
-    int lastIndex = heap.size() - 1;
+
+    int lastIndex = static_cast<int>(heap.size()) - 1;
     if (i == lastIndex) {
         heap.pop_back();
         return;
     }
-    heap[i] = heap[lastIndex]; // shift last into recently removed spot
+
+    heap[i] = heap[lastIndex];
     pos[heap[i].id] = i;
     heap.pop_back();
 
     int parentIndex = (i - 1) / 2;
-    if (i > 0 && flightLess(heap[i], heap[parentIndex])) {
+    if (i > 0 && heap[i] < heap[parentIndex]) {
         siftUp(i);
-    } else {
+    }
+    else {
         siftDown(i);
     }
 }
 
-bool IndexedHeapQueue::landNext(int &id, int &arrival)
+bool IndexedHeapQueue::landNext(int& id, int& arrival)
 {
     if (heap.empty()) {
-         return false;
+        return false;
     }
+
     id = heap[0].id;
     arrival = heap[0].arrival;
     pos.erase(id);
+
     if (heap.size() == 1) {
         heap.pop_back();
         return true;
     }
+
     heap[0] = heap.back();
     heap.pop_back();
     pos[heap[0].id] = 0;
@@ -94,20 +97,20 @@ bool IndexedHeapQueue::landNext(int &id, int &arrival)
 
 int IndexedHeapQueue::size() const
 {
-    return heap.size();
+    return static_cast<int>(heap.size());
 }
 
-// helpers
 void IndexedHeapQueue::siftUp(int i)
 {
     while (i > 0) {
         int parentIndex = (i - 1) / 2;
-        if (flightLess(heap[i], heap[parentIndex])) {
+        if (heap[i] < heap[parentIndex]) {
             std::swap(heap[i], heap[parentIndex]);
             pos[heap[i].id] = i;
             pos[heap[parentIndex].id] = parentIndex;
             i = parentIndex;
-        } else {
+        }
+        else {
             break;
         }
     }
@@ -115,25 +118,26 @@ void IndexedHeapQueue::siftUp(int i)
 
 void IndexedHeapQueue::siftDown(int i)
 {
-    int n = heap.size();
+    int n = static_cast<int>(heap.size());
     while (2 * i + 1 < n) {
         int left = 2 * i + 1;
         int right = 2 * i + 2;
         int smallest = i;
-        
-        if (flightLess(heap[left], heap[smallest])) {
-           smallest = left;
+
+        if (heap[left] < heap[smallest]) {
+            smallest = left;
         }
-        if (right < n && flightLess(heap[right], heap[smallest])) {
-           smallest = right;
+        if (right < n && heap[right] < heap[smallest]) {
+            smallest = right;
         }
-        
+
         if (smallest != i) {
             std::swap(heap[i], heap[smallest]);
             pos[heap[i].id] = i;
             pos[heap[smallest].id] = smallest;
             i = smallest;
-        } else {
+        }
+        else {
             break;
         }
     }
