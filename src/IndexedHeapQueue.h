@@ -8,8 +8,8 @@
 #define INDEXEDHEAPQUEUE_H
 
 #include "ArrivalQueue.h"
-#include <unordered_map>
 #include <vector>
+#include <unordered_map>
 
 // Structure C: an indexed binary min-heap, written by hand (not std::priority_queue).
 //
